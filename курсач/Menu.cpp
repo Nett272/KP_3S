@@ -1,6 +1,7 @@
 #include "Menu.h"
 #include <iostream>
 #include <algorithm>
+using namespace FamilyBudget;
 
 bool Menu::UserAuthFlow(bool asAdmin) {
     while (true) {

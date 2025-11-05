@@ -1,6 +1,7 @@
 #include "Family.h"
 #include <algorithm>
 #include <iostream>
+using namespace FamilyBudget;
 
 std::string Family::getDataFilename(const std::string& familyName) {
     return familyName + ".bin";

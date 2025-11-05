@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <iostream>
 #include <algorithm>
+using namespace FamilyBudget;
 
 std::string UserFileHandler::filename = "users.bin";
 std::string FamilyFileHandler::filename = "families.bin";

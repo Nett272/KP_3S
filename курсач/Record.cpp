@@ -1,5 +1,6 @@
 #include "Record.h"
 #include <iostream>
+using namespace FamilyBudget;
 
 Record::Record(std::shared_ptr<User> ownerPtr, int amount, const std::string& category, const std::string& date)
     : owner(std::move(ownerPtr)), amount(amount), recordDate(date), recordCategory(category) {

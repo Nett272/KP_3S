@@ -1,5 +1,6 @@
 ﻿#include "Menu.h"
 #include <Windows.h>
+using namespace FamilyBudget;
 
 int main() {
     SetConsoleOutputCP(65001);

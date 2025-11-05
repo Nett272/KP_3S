@@ -6,51 +6,55 @@
 #include "Record.h"
 #include "BinaryStorage.h"
 
-enum class SortField {
-    DATE, CATEGORY, AMOUNT, USER
-};
+namespace FamilyBudget {
 
-class Family {
-private:
-    std::string familyName;
-    std::string passwordHash;
+    enum class SortField {
+        DATE, CATEGORY, AMOUNT, USER
+    };
 
-public:
-    static std::string getDataFilename(const std::string& familyName);
+    class Family {
+    private:
+        std::string familyName;
+        std::string passwordHash;
 
-    Family(std::string familyName = "", std::string familyPassword = "");
-    Family(const Family& other) = default;
-    Family& operator=(const Family& other) = default;
+    public:
+        static std::string getDataFilename(const std::string& familyName);
 
-    bool operator==(const Family& other) const;
+        Family(std::string familyName = "", std::string familyPassword = "");
+        Family(const Family& other) = default;
+        Family& operator=(const Family& other) = default;
 
-    std::string getFamilyName() const { return familyName; }
-    std::string getPasswordHash() const { return passwordHash; }
+        bool operator==(const Family& other) const;
 
-    void setFamilyName(const std::string& name) { familyName = name; }
-    void setFamilyPassword(const std::string& plainPassword) { passwordHash = HashPassword(plainPassword); }
-    void setFamilyPasswordHash(const std::string& hash) { passwordHash = hash; }
+        std::string getFamilyName() const { return familyName; }
+        std::string getPasswordHash() const { return passwordHash; }
 
-    // Основные операции
-    bool recordExpense(const Record& expenseRecord);
-    void printInfo();
-    bool deleteRecord(const Record& targetRecord);
-    bool editRecord(const Record& targetRecord, const Record& updatedRecord);
-    bool sortRecords(SortField sortBy, bool ascending = true);
+        void setFamilyName(const std::string& name) { familyName = name; }
+        void setFamilyPassword(const std::string& plainPassword) { passwordHash = HashPassword(plainPassword); }
+        void setFamilyPasswordHash(const std::string& hash) { passwordHash = hash; }
 
-    // Фильтры
-    void FindByDate(const std::string& date) const;
-    void FindByCategory(const std::string& category) const;
-    void FilterByAmountRange(int minAmount, int maxAmount) const;
-    void FilterByUserName(const std::string& username) const;
-    void FilterByDateRange(const std::string& startDate, const std::string& endDate) const;
+        // Основные операции
+        bool recordExpense(const Record& expenseRecord);
+        void printInfo();
+        bool deleteRecord(const Record& targetRecord);
+        bool editRecord(const Record& targetRecord, const Record& updatedRecord);
+        bool sortRecords(SortField sortBy, bool ascending = true);
 
-    // Отчёт
-    void generateReport(const std::string& startDate, const std::string& endDate) const;
-    void ShowMyExpenses(const User& currentUser);
+        // Фильтры
+        void FindByDate(const std::string& date) const;
+        void FindByCategory(const std::string& category) const;
+        void FilterByAmountRange(int minAmount, int maxAmount) const;
+        void FilterByUserName(const std::string& username) const;
+        void FilterByDateRange(const std::string& startDate, const std::string& endDate) const;
 
-    // Сериализация
-    friend std::ofstream& operator<<(std::ofstream& out, const Family& family);
-    friend std::ifstream& operator>>(std::ifstream& in, Family& family);
-    friend std::ostream& operator<<(std::ostream& out, const Family& family);
-};
+        // Отчёт
+        void generateReport(const std::string& startDate, const std::string& endDate) const;
+        void ShowMyExpenses(const User& currentUser);
+
+        // Сериализация
+        friend std::ofstream& operator<<(std::ofstream& out, const Family& family);
+        friend std::ifstream& operator>>(std::ifstream& in, Family& family);
+        friend std::ostream& operator<<(std::ostream& out, const Family& family);
+    };
+
+}

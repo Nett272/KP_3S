@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <sstream>
 #include <iomanip>
+using namespace FamilyBudget;
 
 using namespace std;
 

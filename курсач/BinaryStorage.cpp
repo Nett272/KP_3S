@@ -3,6 +3,8 @@
 #include "Record.h"
 #include "Family.h"
 
+using namespace FamilyBudget;
+
 template<typename T>
 bool BinaryStorage<T>::ReadAllFromStream(std::ifstream& in, std::vector<T>& items) {
     if (!in.is_open()) {
@@ -66,8 +68,3 @@ bool BinaryStorage<T>::openDataFileForWrite(std::ofstream& outputFile, std::ios:
     }
     return true;
 }
-
-// Явная инстанциация
-template class BinaryStorage<User>;
-template class BinaryStorage<Record>;
-template class BinaryStorage<Family>;

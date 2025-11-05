@@ -1,5 +1,6 @@
 #include "User.h"
 #include <iostream>
+using namespace FamilyBudget;
 
 User::User(std::string username, std::string password, std::string familyName, bool isAdmin)
     : username(username), familyName(familyName), isAdminFlag(isAdmin), passwordHash(HashPassword(password)) {
