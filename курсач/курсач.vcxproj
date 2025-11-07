@@ -129,7 +129,6 @@
     <ClCompile Include="Record.cpp" />
     <ClCompile Include="User.cpp" />
     <ClCompile Include="Utils.cpp" />
-    <ClCompile Include="BinaryStorage.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>

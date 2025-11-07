@@ -2,57 +2,57 @@
 #include <windows.h>
 #include <sstream>
 #include <iomanip>
-using namespace FamilyBudget;
 
-using namespace std;
+namespace FamilyBudget {
 
-string current_date() {
-    time_t t = time(nullptr);
-    tm tm{};
+    std::string current_date() {
+        time_t t = time(nullptr);
+        tm tm{};
 #if defined(_MSC_VER)
-    localtime_s(&tm, &t);
+        localtime_s(&tm, &t);
 #else
-    localtime_r(&t, &tm);
+        localtime_r(&t, &tm);
 #endif
-    char buf[11];
-    strftime(buf, sizeof(buf), "%Y-%m-%d", &tm);
-    return string(buf);
-}
+        char buf[11];
+        strftime(buf, sizeof(buf), "%Y-%m-%d", &tm);
+        return std::string(buf);
+    }
 
-void clearInputStream() {
-    cin.clear();
-    cin.ignore((numeric_limits<streamsize>::max)(), '\n');
-    cin.sync();
-}
+    void clearInputStream() {
+        std::cin.clear();
+        std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+        std::cin.sync();
+    }
 
-int ReadInt(const string& prompt) {
-    int value;
-    while (true) {
-        cout << prompt;
-        if (cin >> value) {
-            clearInputStream();
-            return value;
-        }
-        else {
-            cout << "Ошибка ввода! Введите корректное число.\n";
-            clearInputStream();
+    int ReadInt(const std::string& prompt) {
+        int value;
+        while (true) {
+            std::cout << prompt;
+            if (std::cin >> value) {
+                clearInputStream();
+                return value;
+            }
+            else {
+                std::cout << "Ошибка ввода! Введите корректное число.\n";
+                clearInputStream();
+            }
         }
     }
-}
 
-string ReadLine(const string& prompt) {
-    string line;
-    while (true) {
-        cout << prompt;
-        if (!getline(cin, line)) {
-            cout << "Ошибка ввода! Попробуйте снова.\n";
-            clearInputStream();
-            continue;
+    std::string ReadLine(const std::string& prompt) {
+        std::string line;
+        while (true) {
+            std::cout << prompt;
+            if (!std::getline(std::cin, line)) {
+                std::cout << "Ошибка ввода! Попробуйте снова.\n";
+                clearInputStream();
+                continue;
+            }
+            return line;
         }
-        return line;
     }
-}
 
-string HashPassword(const string& password) {
-    return to_string(hash<string>{}(password));
+    std::string HashPassword(const std::string& password) {
+        return std::to_string(std::hash<std::string>{}(password));
+    }
 }

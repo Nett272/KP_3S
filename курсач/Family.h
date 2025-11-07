@@ -5,12 +5,9 @@
 #include <map>
 #include "Record.h"
 #include "BinaryStorage.h"
+#include <functional>
 
 namespace FamilyBudget {
-
-    enum class SortField {
-        DATE, CATEGORY, AMOUNT, USER
-    };
 
     class Family {
     private:
@@ -35,14 +32,13 @@ namespace FamilyBudget {
 
         // Основные операции
         bool recordExpense(const Record& expenseRecord);
-        void printInfo();
+        void ShowFamilyExpenses();
         bool deleteRecord(const Record& targetRecord);
         bool editRecord(const Record& targetRecord, const Record& updatedRecord);
-        bool sortRecords(SortField sortBy, bool ascending = true);
+        bool sortRecords(std::function <bool(const Record&, const Record&)> comp);
 
         // Фильтры
-        void FindByDate(const std::string& date) const;
-        void FindByCategory(const std::string& category) const;
+        void FindRecord(std::function <bool(const Record&)> comp) const;
         void FilterByAmountRange(int minAmount, int maxAmount) const;
         void FilterByUserName(const std::string& username) const;
         void FilterByDateRange(const std::string& startDate, const std::string& endDate) const;
