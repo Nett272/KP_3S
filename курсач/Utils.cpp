@@ -1,7 +1,4 @@
 #include "Utils.h"
-#include <windows.h>
-#include <sstream>
-#include <iomanip>
 
 namespace FamilyBudget {
 
@@ -21,7 +18,6 @@ namespace FamilyBudget {
     void clearInputStream() {
         std::cin.clear();
         std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
-        std::cin.sync();
     }
 
     int ReadInt(const std::string& prompt) {

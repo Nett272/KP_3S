@@ -13,7 +13,6 @@ namespace FamilyBudget {
         FamilyFileHandler family_file_handler;
         std::shared_ptr<Family> current_family;
         std::shared_ptr<User> current_user;
-        const int SCAM = 1;
 
         bool UserAuthFlow(bool asAdmin);
         bool RegistrationFlow(bool asAdmin);

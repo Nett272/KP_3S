@@ -42,50 +42,17 @@ namespace FamilyBudget {
             found = true;
         }
 
-        if (!found) {
-            std::cout << "У вас пока нет записей о расходах.\n";
-        }
-        else {
-            std::cout << "Общая сумма расходов семьи: " << total << "\n";
-        }
+        std::cout << "Общая сумма расходов семьи: " << total << "\n";
+
         inputFile.close();
     }
 
 
     bool Family::deleteRecord(const Record& targetRecord) {
-        std::vector<Record> records;
-        std::ifstream inputFile;
-        if (!BinaryStorage<Record>::openDataFileForRead(inputFile, getDataFilename(familyName))) return false;
-        if (!BinaryStorage<Record>::ReadAllFromStream(inputFile, records)) return false;
-        inputFile.close();
-
-        auto it = std::find_if(records.begin(), records.end(),
-            [&](const Record& r) { return r == targetRecord; });
-        if (it == records.end()) return false;
-
-        records.erase(it);
-
-        std::ofstream os;
-        if (!BinaryStorage<Record>::openDataFileForWrite(os, std::ios::trunc, getDataFilename(familyName))) return false;
-        bool result = BinaryStorage<Record>::OverwriteAllToFile(os, records);
-        return result;
+        return false;
     }
 
     bool Family::editRecord(const Record& targetRecord, const Record& updatedRecord) {
-        std::vector<Record> records;
-        std::ifstream inputFile;
-        if (!BinaryStorage<Record>::openDataFileForRead(inputFile, getDataFilename(familyName))) return false;
-        if (!BinaryStorage<Record>::ReadAllFromStream(inputFile, records)) return false;
-        inputFile.close();
-
-        for (size_t i = 0; i < records.size(); ++i) {
-            if (records[i] == targetRecord) {
-                records[i] = updatedRecord;
-                std::ofstream outputFile;
-                if (!BinaryStorage<Record>::openDataFileForWrite(outputFile, std::ios::trunc, getDataFilename(familyName))) return false;
-                return BinaryStorage<Record>::OverwriteAllToFile(outputFile, records);
-            }
-        }
         return false;
     }
 
@@ -106,7 +73,6 @@ namespace FamilyBudget {
         return BinaryStorage<Record>::OverwriteAllToFile(outputFile, records);
     }
 
-
     void Family::FindRecord(std::function <bool(const Record&)> comp) const {
         std::ifstream inputFile;
         if (!BinaryStorage<Record>::openDataFileForRead(inputFile, getDataFilename(familyName))) return;
@@ -122,6 +88,7 @@ namespace FamilyBudget {
         if (!found) std::cout << "Записей с такими параметрами не найдена.\n";
         inputFile.close();
     }
+
 
     void Family::FilterByAmountRange(int minAmount, int maxAmount) const {
         std::ifstream inputFile;
@@ -226,6 +193,7 @@ namespace FamilyBudget {
         std::cout << "Итого: " << totalFamilySum << "\n\n";
     }
 
+
     void Family::ShowMyExpenses(const User& currentUser) {
         std::ifstream inputFile;
         if (!BinaryStorage<Record>::openDataFileForRead(inputFile, getDataFilename(familyName))) return;
@@ -242,12 +210,8 @@ namespace FamilyBudget {
             }
         }
 
-        if (!found) {
-            std::cout << "У вас пока нет записей о расходах.\n";
-        }
-        else {
-            std::cout << "Общая сумма ваших расходов: " << total << "\n";
-        }
+        std::cout << "Общая сумма ваших расходов: " << total << "\n";
+
         inputFile.close();
     }
 

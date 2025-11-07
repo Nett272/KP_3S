@@ -51,12 +51,18 @@ namespace FamilyBudget {
                 }
 
                 Family newFamily(familyName, familyPassword);
-                if (family_file_handler.CreateFamily(newFamily)) {
+                if (family_file_handler.Registrateon(newFamily)) {
                     std::cout << "Семья '" << familyName << "' успешно создана!\n";
                     break;
                 }
                 else {
-                    std::cout << "Семья с таким названием уже существует. Придумайте другое название.\n";
+                    std::cout << "Семья с таким названием уже существует.\n";
+                    int retryChoice = ReadInt("1) Попробовать снова\n2) Вернуться в меню\nВыберите: ");
+                    if (retryChoice == 2) return false;
+                    else if (retryChoice != 1) {
+                        std::cout << "Неверный выбор.\n";
+                        return false;
+                    }
                 }
             }
         }
@@ -66,14 +72,18 @@ namespace FamilyBudget {
                 familyPassword = ReadLine("Пароль семьи: ");
 
                 Family familyProbe(familyName, familyPassword);
-                if (family_file_handler.AuthorizationInFamily(familyProbe)) {
+                if (family_file_handler.Authorization(familyProbe)) {
                     std::cout << "Успешный вход в семью '" << familyName << "'\n";
                     break;
                 }
                 else {
-                    std::cout << "Неверное название семьи или пароль. Попробуйте снова.\n";
+                    std::cout << "Неверное название семьи или пароль.\n";
                     int retryChoice = ReadInt("1) Попробовать снова\n2) Вернуться в меню\nВыберите: ");
                     if (retryChoice == 2) return false;
+                    else if (retryChoice != 1) {
+                        std::cout << "Неверный выбор.\n";
+                        return false;
+                    }
                 }
             }
         }
@@ -93,16 +103,20 @@ namespace FamilyBudget {
             }
 
             User newUser(username, password, familyName, asAdmin);
-            if (user_file_handler.Registration(newUser)) {
+            if (user_file_handler.Registrateon(newUser)) {
                 current_user = std::make_shared<User>(newUser);
                 current_family = std::make_shared<Family>(familyName, familyPassword);
                 std::cout << "Регистрация успешна! Добро пожаловать в семью '" << familyName << "'\n";
                 return true;
             }
             else {
-                std::cout << "Пользователь с таким именем уже существует. Выберите другое имя.\n";
-                int retryChoice = ReadInt("1) Попробовать другое имя\n2) Вернуться в меню\nВыберите: ");
+                std::cout << "Пользователь с таким именем уже существует.\n";
+                int retryChoice = ReadInt("1) Попробовать снова\n2) Вернуться в меню\nВыберите: ");
                 if (retryChoice == 2) return false;
+                else if (retryChoice != 1) {
+                    std::cout << "Неверный выбор.\n";
+                    return false;
+                }
             }
         }
     }
@@ -125,6 +139,10 @@ namespace FamilyBudget {
                 std::cout << "Неверное имя пользователя или пароль.\n";
                 int retryChoice = ReadInt("1) Попробовать снова\n2) Вернуться в меню\nВыберите: ");
                 if (retryChoice == 2) return false;
+                else if (retryChoice != 1) {
+                    std::cout << "Неверный выбор.\n";
+                    return false;
+                }
             }
         }
 
@@ -134,7 +152,7 @@ namespace FamilyBudget {
             std::string familyPassword = ReadLine("Пароль семьи '" + userFamilyName + "': ");
 
             Family familyProbe(userFamilyName, familyPassword);
-            if (family_file_handler.AuthorizationInFamily(familyProbe)) {
+            if (family_file_handler.Authorization(familyProbe)) {
                 current_user = std::make_shared<User>(loadedUser);
                 current_family = std::make_shared<Family>(familyProbe);
                 std::cout << "Авторизация успешна! Добро пожаловать в семью '" << userFamilyName << "'\n";
@@ -144,6 +162,10 @@ namespace FamilyBudget {
                 std::cout << "Неверный пароль семьи.\n";
                 int retryChoice = ReadInt("1) Попробовать снова\n2) Вернуться в меню\nВыберите: ");
                 if (retryChoice == 2) return false;
+                else if (retryChoice != 1) {
+                    std::cout << "Неверный выбор.\n";
+                    return false;
+                }
             }
         }
     }
@@ -245,13 +267,13 @@ namespace FamilyBudget {
 
                     switch (sort_choice) {
                     case 1: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getDate() >= b.getDate(); }); break;
-                    case 2: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getDate() >= b.getDate(); }); break;
-                    case 3: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getDate() >= b.getDate(); }); break;
-                    case 4: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getDate() >= b.getDate(); }); break;
-                    case 5: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getDate() >= b.getDate(); }); break;
-                    case 6: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getDate() >= b.getDate(); }); break;
-                    case 7: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getDate() >= b.getDate(); }); break;
-                    case 8: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getDate() >= b.getDate(); }); break;
+                    case 2: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getDate() < b.getDate(); }); break;
+                    case 3: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getCategory() >= b.getCategory(); }); break;
+                    case 4: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getCategory() < b.getCategory(); }); break;
+                    case 5: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getAmount() >= b.getAmount(); }); break;
+                    case 6: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getAmount() < b.getAmount(); }); break;
+                    case 7: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getUser() >= b.getUser(); }); break;
+                    case 8: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getUser() < b.getUser(); }); break;
                     default: std::cout << "Неверный выбор.\n"; break;
                     }
 
@@ -402,9 +424,16 @@ namespace FamilyBudget {
     }
 
     void Menu::RunAdminEntry() {
+        std::ifstream file("secret.txt", std::ios::in);
+        if (!file.is_open()) {
+            std::cout << "Ошибка открытия файла с паролем";
+            return;
+        }
+        std::string real_password;
+        file >> real_password;
         while (true) {
             std::string password = ReadLine("Введите админский пароль: ");
-            if (password == std::to_string(SCAM)) {
+            if (password == real_password) {
                 std::cout << "Пароль подтверждён. Продолжаем.\n";
                 break;
             }

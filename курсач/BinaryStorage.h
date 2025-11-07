@@ -34,7 +34,7 @@ namespace FamilyBudget {
             for (const auto& item : items) {
                 out << item;
                 if (!out) {
-                    std::cerr << "Ошибка при записи объекта в файл \n";
+                    std::cerr << "Ошибка при записи объекта в файл.\n";
                     return false;
                 }
             }
@@ -63,7 +63,7 @@ namespace FamilyBudget {
                 create.close();
                 outputFile.open(fileName, std::ios::binary | mode);
                 if (!outputFile.is_open()) {
-                    std::cout << "Ошибка открытия файла для записи: " << fileName << "\n";
+                    std::cout << "Ошибка открытия файла: " << fileName << "\n";
                     return false;
                 }
             }

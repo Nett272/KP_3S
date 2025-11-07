@@ -3,6 +3,8 @@
 #include <memory>
 #include "User.h"
 #include "Family.h"
+#include <iostream>
+#include <algorithm>
 #include "BinaryStorage.h"
 
 namespace FamilyBudget {
@@ -28,7 +30,7 @@ namespace FamilyBudget {
     public:
         static void SetFilename(const std::string& fname) { filename = fname; }
 
-        bool Registration(const User& user);
+        bool Registrateon(const User& user);
         bool Authorization(User& user);
         void PrintInfo(const User& user) override;
         void PrintFile() override;
@@ -47,14 +49,15 @@ namespace FamilyBudget {
     public:
         static void SetFilename(const std::string& fname) { filename = fname; }
 
-        bool CreateFamily(const Family& family);
-        bool AuthorizationInFamily(Family& family);
+        bool Registrateon(const Family& family);
+        bool Authorization(Family& family);
         void PrintInfo(const User& user) override;
         void PrintFile() override;
         void ClearFile() override;
         void PrintFamilyFile(const std::string& familyName);
         void ClearFamilyFile(std::string& familyName);
         bool DeleteFamily(std::string& familyName);
+
     };
 
 }

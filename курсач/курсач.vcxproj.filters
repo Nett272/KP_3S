@@ -60,4 +60,7 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="secret.txt" />
+  </ItemGroup>
 </Project>
