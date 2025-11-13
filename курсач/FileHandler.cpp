@@ -7,13 +7,13 @@ namespace FamilyBudget {
     std::string UserFileHandler::filename = "users.bin";
     std::string FamilyFileHandler::filename = "families.bin";
 
-    bool UserFileHandler::Registrateon(const User& user) {
+    bool UserFileHandler::Registration(const User& user) {
         std::ifstream inputFile;
-        if (!BinaryStorage<User>::openDataFileForRead(inputFile, filename)) return false;
+        if (!BinaryStorage<User>::OpenDataFileForRead(inputFile, filename)) return false;
 
         User tempUser;
         while (inputFile >> tempUser) {
-            if (tempUser.getUsername() == user.getUsername()) {
+            if (tempUser.GetUsername() == user.GetUsername()) {
                 inputFile.close();
                 return false;
             }
@@ -21,7 +21,7 @@ namespace FamilyBudget {
         inputFile.close();
 
         std::ofstream outputFile;
-        if (!BinaryStorage<User>::openDataFileForWrite(outputFile, std::ios::app, filename)) return false;
+        if (!BinaryStorage<User>::OpenDataFileForWrite(outputFile, std::ios::app, filename)) return false;
         outputFile << user;
         outputFile.close();
         return true;
@@ -29,12 +29,12 @@ namespace FamilyBudget {
 
     bool UserFileHandler::Authorization(User& user) {
         std::ifstream inputFile;
-        if (!BinaryStorage<User>::openDataFileForRead(inputFile, filename)) return false;
+        if (!BinaryStorage<User>::OpenDataFileForRead(inputFile, filename)) return false;
 
         User tempUser;
         while (inputFile >> tempUser) {
-            if (tempUser.getUsername() == user.getUsername() &&
-                tempUser.getPasswordHash() == user.getPasswordHash()) {
+            if (tempUser.GetUsername() == user.GetUsername() &&
+                tempUser.GetPasswordHash() == user.GetPasswordHash()) {
                 inputFile.close();
                 user = tempUser;
                 return true;
@@ -46,7 +46,7 @@ namespace FamilyBudget {
 
     void UserFileHandler::PrintInfo(const User& user) {
         std::ifstream inputFile;
-        if (!BinaryStorage<User>::openDataFileForRead(inputFile, filename)) return;
+        if (!BinaryStorage<User>::OpenDataFileForRead(inputFile, filename)) return;
 
         User tempUser;
         while (inputFile >> tempUser) {
@@ -62,7 +62,7 @@ namespace FamilyBudget {
 
     void UserFileHandler::PrintFile() {
         std::ifstream inputFile;
-        if (!BinaryStorage<User>::openDataFileForRead(inputFile, filename)) return;
+        if (!BinaryStorage<User>::OpenDataFileForRead(inputFile, filename)) return;
 
         User tempUser;
         while (inputFile >> tempUser) {
@@ -73,28 +73,23 @@ namespace FamilyBudget {
 
     void UserFileHandler::ClearFile() {
         std::ofstream outputFile;
-        if (!BinaryStorage<Family>::openDataFileForWrite(outputFile, std::ios::trunc, filename)) return;
+        if (!BinaryStorage<Family>::OpenDataFileForWrite(outputFile, std::ios::trunc, filename)) return;
 
         outputFile.close();
         std::cout << "Файл успешно очищен: " << filename << "\n";
     }
 
 
-    bool UserFileHandler::DeleteUser(std::string& userName) {
-        return false; // Пока не реализовано
-    }
 
 
 
-
-
-    bool FamilyFileHandler::Registrateon(const Family& family) {
+    bool FamilyFileHandler::Registration(const Family& family) {
         std::ifstream inputFile;
-        if (!BinaryStorage<Family>::openDataFileForRead(inputFile, filename)) return false;
+        if (!BinaryStorage<Family>::OpenDataFileForRead(inputFile, filename)) return false;
 
         Family tempFamily;
         while (inputFile >> tempFamily) {
-            if (tempFamily.getFamilyName() == family.getFamilyName()) {
+            if (tempFamily.GetFamilyName() == family.GetFamilyName()) {
                 inputFile.close();
                 return false;
             }
@@ -102,7 +97,7 @@ namespace FamilyBudget {
         inputFile.close();
 
         std::ofstream outputFile;
-        if (!BinaryStorage<Family>::openDataFileForWrite(outputFile, std::ios::app, filename)) return false;
+        if (!BinaryStorage<Family>::OpenDataFileForWrite(outputFile, std::ios::app, filename)) return false;
         outputFile << family;
         outputFile.close();
         return true;
@@ -110,12 +105,12 @@ namespace FamilyBudget {
 
     bool FamilyFileHandler::Authorization(Family& family) {
         std::ifstream inputFile;
-        if (!BinaryStorage<Family>::openDataFileForRead(inputFile, filename)) return false;
+        if (!BinaryStorage<Family>::OpenDataFileForRead(inputFile, filename)) return false;
 
         Family tempFamily;
         while (inputFile >> tempFamily) {
-            if (tempFamily.getFamilyName() == family.getFamilyName() &&
-                tempFamily.getPasswordHash() == family.getPasswordHash()) {
+            if (tempFamily.GetFamilyName() == family.GetFamilyName() &&
+                tempFamily.GetPasswordHash() == family.GetPasswordHash()) {
                 inputFile.close();
                 family = tempFamily;
                 return true;
@@ -127,11 +122,11 @@ namespace FamilyBudget {
 
     void FamilyFileHandler::PrintInfo(const User& user) {
         std::ifstream inputFile;
-        if (!BinaryStorage<Family>::openDataFileForRead(inputFile, filename)) return;
+        if (!BinaryStorage<Family>::OpenDataFileForRead(inputFile, filename)) return;
 
         Family tempFamily;
         while (inputFile >> tempFamily) {
-            if (user.getFamilyName() == tempFamily.getFamilyName()) {
+            if (user.GetFamilyName() == tempFamily.GetFamilyName()) {
                 std::cout << tempFamily << std::endl;
                 inputFile.close();
                 return;
@@ -143,7 +138,7 @@ namespace FamilyBudget {
 
     void FamilyFileHandler::PrintFile() {
         std::ifstream inputFile;
-        if (!BinaryStorage<Family>::openDataFileForRead(inputFile, filename)) return;
+        if (!BinaryStorage<Family>::OpenDataFileForRead(inputFile, filename)) return;
 
         Family tempFamily;
         while (inputFile >> tempFamily) {
@@ -155,7 +150,7 @@ namespace FamilyBudget {
     void FamilyFileHandler::ClearFile() {
         DeleteAllFamilies();
         std::ofstream outputFile;
-        if (!BinaryStorage<Family>::openDataFileForWrite(outputFile, std::ios::trunc, filename)) return;
+        if (!BinaryStorage<Family>::OpenDataFileForWrite(outputFile, std::ios::trunc, filename)) return;
 
         outputFile.close();
         std::cout << "Файл успешно очищен: " << filename << "\n";
@@ -163,8 +158,8 @@ namespace FamilyBudget {
 
     void FamilyFileHandler::ClearFamilyFile(std::string& familyName) {
         std::ofstream outputFile;
-        std::string recordsFilename = Family::getDataFilename(familyName);
-        if (!BinaryStorage<Record>::openDataFileForWrite(outputFile, std::ios::trunc, recordsFilename)) return;
+        std::string recordsFilename = Family::GetDataFilename(familyName);
+        if (!BinaryStorage<Record>::OpenDataFileForWrite(outputFile, std::ios::trunc, recordsFilename)) return;
 
         std::cout << "Файл успешно очищен: " << recordsFilename << "\n";
         outputFile.close();
@@ -172,11 +167,11 @@ namespace FamilyBudget {
 
     void FamilyFileHandler::DeleteAllFamilies() {
         std::ifstream inputFile;
-        if (!BinaryStorage<Family>::openDataFileForRead(inputFile, filename)) return;
+        if (!BinaryStorage<Family>::OpenDataFileForRead(inputFile, filename)) return;
 
         Family tempFamily;
         while (inputFile >> tempFamily) {
-            std::string fileToDelete = Family::getDataFilename(tempFamily.getFamilyName());
+            std::string fileToDelete = Family::GetDataFilename(tempFamily.GetFamilyName());
             DeleteFileA(fileToDelete.c_str());
         }
         inputFile.close();
@@ -184,8 +179,8 @@ namespace FamilyBudget {
 
     void FamilyFileHandler::PrintFamilyFile(const std::string& familyName) {
         std::ifstream inputFile;
-        std::string recordsFilename = Family::getDataFilename(familyName);
-        if (!BinaryStorage<Record>::openDataFileForRead(inputFile, recordsFilename)) return;
+        std::string recordsFilename = Family::GetDataFilename(familyName);
+        if (!BinaryStorage<Record>::OpenDataFileForRead(inputFile, recordsFilename)) return;
 
         Record record;
         bool found = false;
@@ -193,11 +188,6 @@ namespace FamilyBudget {
             std::cout << record << "\n";
         }
         inputFile.close();
-    }
-
-
-    bool FamilyFileHandler::DeleteFamily(std::string& familyName) {
-        return false; // Пока не реализовано
     }
 
 }

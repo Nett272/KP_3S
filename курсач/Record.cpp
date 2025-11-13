@@ -10,14 +10,14 @@ namespace FamilyBudget {
     Record::Record() : owner(nullptr), amount(0), recordDate(""), recordCategory("") {}
 
     bool Record::operator==(const Record& other) const {
-        return (owner && other.owner && owner->getUsername() == other.owner->getUsername() &&
+        return (owner && other.owner && owner->GetUsername() == other.owner->GetUsername() &&
             amount == other.amount &&
             recordDate == other.recordDate &&
             recordCategory == other.recordCategory);
     }
 
     std::ofstream& operator<<(std::ofstream& out, const Record& record) {
-        std::string name = record.owner ? record.owner->getUsername() : "";
+        std::string name = record.owner ? record.owner->GetUsername() : "";
         size_t nameLength = name.size();
         out.write(reinterpret_cast<const char*>(&nameLength), sizeof(nameLength));
         out.write(name.c_str(), nameLength);
@@ -85,14 +85,14 @@ namespace FamilyBudget {
         }
 
         auto tempUser = std::make_shared<User>();
-        tempUser->setUsername(name);
-        record.setUser(tempUser);
+        tempUser->SetUsername(name);
+        record.SetUser(tempUser);
 
         return in;
     }
 
     std::ostream& operator<<(std::ostream& out, const Record& record) {
-        out << "Имя: " << (record.owner ? record.owner->getUsername() : "Неизвестный") << "\n";
+        out << "Имя: " << (record.owner ? record.owner->GetUsername() : "Неизвестный") << "\n";
         out << "Сумма: " << record.amount << "\n";
         out << "Категория: " << record.recordCategory << "\n";
         out << "Дата: " << record.recordDate << "\n";

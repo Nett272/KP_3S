@@ -51,7 +51,7 @@ namespace FamilyBudget {
                 }
 
                 Family newFamily(familyName, familyPassword);
-                if (family_file_handler.Registrateon(newFamily)) {
+                if (FamilyFileHandler.Registration(newFamily)) {
                     std::cout << "Семья '" << familyName << "' успешно создана!\n";
                     break;
                 }
@@ -72,7 +72,7 @@ namespace FamilyBudget {
                 familyPassword = ReadLine("Пароль семьи: ");
 
                 Family familyProbe(familyName, familyPassword);
-                if (family_file_handler.Authorization(familyProbe)) {
+                if (FamilyFileHandler.Authorization(familyProbe)) {
                     std::cout << "Успешный вход в семью '" << familyName << "'\n";
                     break;
                 }
@@ -103,9 +103,9 @@ namespace FamilyBudget {
             }
 
             User newUser(username, password, familyName, asAdmin);
-            if (user_file_handler.Registrateon(newUser)) {
-                current_user = std::make_shared<User>(newUser);
-                current_family = std::make_shared<Family>(familyName, familyPassword);
+            if (UserFileHandler.Registration(newUser)) {
+                CurrentUser = std::make_shared<User>(newUser);
+                CurrentFamily = std::make_shared<Family>(familyName, familyPassword);
                 std::cout << "Регистрация успешна! Добро пожаловать в семью '" << familyName << "'\n";
                 return true;
             }
@@ -129,10 +129,10 @@ namespace FamilyBudget {
             std::string username = ReadLine("Имя пользователя: ");
             std::string password = ReadLine("Пароль: ");
 
-            loadedUser.setUsername(username);
-            loadedUser.setPasswordHash(HashPassword(password));
+            loadedUser.SetUsername(username);
+            loadedUser.SetPasswordHash(HashPassword(password));
 
-            if (user_file_handler.Authorization(loadedUser)) {
+            if (UserFileHandler.Authorization(loadedUser)) {
                 break;
             }
             else {
@@ -146,15 +146,15 @@ namespace FamilyBudget {
             }
         }
 
-        std::string userFamilyName = loadedUser.getFamilyName();
+        std::string userFamilyName = loadedUser.GetFamilyName();
 
         while (true) {
             std::string familyPassword = ReadLine("Пароль семьи '" + userFamilyName + "': ");
 
             Family familyProbe(userFamilyName, familyPassword);
-            if (family_file_handler.Authorization(familyProbe)) {
-                current_user = std::make_shared<User>(loadedUser);
-                current_family = std::make_shared<Family>(familyProbe);
+            if (FamilyFileHandler.Authorization(familyProbe)) {
+                CurrentUser = std::make_shared<User>(loadedUser);
+                CurrentFamily = std::make_shared<Family>(familyProbe);
                 std::cout << "Авторизация успешна! Добро пожаловать в семью '" << userFamilyName << "'\n";
                 return true;
             }
@@ -171,11 +171,11 @@ namespace FamilyBudget {
     }
 
     void Menu::AuthenticatedMainMenu() {
-        bool is_admin = current_user->isAdmin();
+        bool is_admin = CurrentUser->IsAdmin();
 
         while (true) {
             std::cout << "\n==============================================\n";
-            std::cout << "            ГЛАВНОЕ МЕНЮ (" << current_user->getUsername() << (is_admin ? " — АДМИН" : "") << ")\n";
+            std::cout << "            ГЛАВНОЕ МЕНЮ (" << CurrentUser->GetUsername() << (is_admin ? " — АДМИН" : "") << ")\n";
             std::cout << "==============================================\n";
             std::cout << "  1) Добавить расход/доход\n";
             std::cout << "  2) Редактировать расход\n";
@@ -208,10 +208,11 @@ namespace FamilyBudget {
                     int amount = ReadInt("Введите сумму: ");
                     std::string category = ReadLine("Введите категорию: ");
                     std::string date = ReadLine("Введите дату (YYYY-MM-DD, Enter — текущая): ");
-                    if (date.empty()) date = current_date();
+                    if (date.empty()) date = CurrentDate();
+                    else InputDate(date);
 
-                    Record new_record(current_user, amount, category, date);
-                    if (current_family->recordExpense(new_record))
+                    Record new_record(CurrentUser, amount, category, date);
+                    if (CurrentFamily->RecordExpense(new_record))
                         std::cout << "Запись успешно добавлена.\n";
                     else
                         std::cout << "Ошибка при добавлении записи.\n";
@@ -222,19 +223,21 @@ namespace FamilyBudget {
                     int old_amount = ReadInt("Введите сумму записи для изменения: ");
                     std::string old_category = ReadLine("Введите категорию: ");
                     std::string old_date = ReadLine("Введите дату (YYYY-MM-DD, Enter — текущая): ");
-                    if (old_date.empty()) old_date = current_date();
+                    if (old_date.empty()) old_date = CurrentDate();
+                    else InputDate(old_date);
 
-                    Record old_record(current_user, old_amount, old_category, old_date);
+                    Record old_record(CurrentUser, old_amount, old_category, old_date);
 
                     std::cout << "\nВведите новые данные:\n";
                     int new_amount = ReadInt("Новая сумма: ");
                     std::string new_category = ReadLine("Новая категория: ");
-                    std::string new_date = ReadLine("Новая дата (YYYY-MM-DD, Enter — текущая): ");
-                    if (new_date.empty()) new_date = current_date();
+                    std::string new_date = ReadLine("Введите дату (YYYY-MM-DD, Enter — текущая): ");
+                    if (new_date.empty()) new_date = CurrentDate();
+                    else InputDate(new_date);
 
-                    Record updated_record(current_user, new_amount, new_category, new_date);
+                    Record updated_record(CurrentUser, new_amount, new_category, new_date);
 
-                    if (current_family->editRecord(old_record, updated_record))
+                    if (BinaryStorage<Record>::EditRecord(CurrentFamily->GetDataFilename(CurrentFamily->GetFamilyName()), old_record, updated_record))
                         std::cout << "Запись успешно отредактирована.\n";
                     else
                         std::cout << "Ошибка: запись не найдена или не принадлежит вам.\n";
@@ -245,11 +248,12 @@ namespace FamilyBudget {
                     int delete_amount = ReadInt("Введите сумму записи для удаления: ");
                     std::string delete_category = ReadLine("Введите категорию: ");
                     std::string delete_date = ReadLine("Введите дату (YYYY-MM-DD, Enter — текущая): ");
-                    if (delete_date.empty()) delete_date = current_date();
+                    if (delete_date.empty()) delete_date = CurrentDate();
+                    else InputDate(delete_date);
 
-                    Record target_record(current_user, delete_amount, delete_category, delete_date);
+                    Record target_record(CurrentUser, delete_amount, delete_category, delete_date);
 
-                    if (current_family->deleteRecord(target_record))
+                    if (BinaryStorage<Record>::RemoveRecord(CurrentFamily->GetDataFilename(CurrentFamily->GetFamilyName()), target_record))
                         std::cout << "Запись успешно удалена.\n";
                     else
                         std::cout << "Запись не найдена или принадлежит другому пользователю.\n";
@@ -260,20 +264,17 @@ namespace FamilyBudget {
                     std::cout << "1) По дате (по возрастанию)\n2) По дате (по убыванию)\n";
                     std::cout << "3) По категории (по возрастанию)\n4) По категории (по убыванию)\n";
                     std::cout << "5) По сумме (по возрастанию)\n6) По сумме (по убыванию)\n";
-                    std::cout << "7) По пользователю (по возрастанию)\n8) По пользователю (по убыванию)\n";
 
                     int sort_choice = ReadInt("Выберите вариант сортировки: ");
                     bool sort_success = false;
 
                     switch (sort_choice) {
-                    case 1: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getDate() >= b.getDate(); }); break;
-                    case 2: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getDate() < b.getDate(); }); break;
-                    case 3: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getCategory() >= b.getCategory(); }); break;
-                    case 4: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getCategory() < b.getCategory(); }); break;
-                    case 5: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getAmount() >= b.getAmount(); }); break;
-                    case 6: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getAmount() < b.getAmount(); }); break;
-                    case 7: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getUser() >= b.getUser(); }); break;
-                    case 8: sort_success = current_family->sortRecords([](const Record& a, const Record& b) {return a.getUser() < b.getUser(); }); break;
+                    case 1: sort_success = CurrentFamily->SortRecords([](const Record& a, const Record& b) {return a.GetDate() > b.GetDate(); }); break;
+                    case 2: sort_success = CurrentFamily->SortRecords([](const Record& a, const Record& b) {return a.GetDate() < b.GetDate(); }); break;
+                    case 3: sort_success = CurrentFamily->SortRecords([](const Record& a, const Record& b) {return a.GetCategory() > b.GetCategory(); }); break;
+                    case 4: sort_success = CurrentFamily->SortRecords([](const Record& a, const Record& b) {return a.GetCategory() < b.GetCategory(); }); break;
+                    case 5: sort_success = CurrentFamily->SortRecords([](const Record& a, const Record& b) {return a.GetAmount() > b.GetAmount(); }); break;
+                    case 6: sort_success = CurrentFamily->SortRecords([](const Record& a, const Record& b) {return a.GetAmount() < b.GetAmount(); }); break;
                     default: std::cout << "Неверный выбор.\n"; break;
                     }
 
@@ -287,12 +288,13 @@ namespace FamilyBudget {
 
                     if (search_choice == 1) {
                         std::string search_date = ReadLine("Введите дату (YYYY-MM-DD, Enter — текущая): ");
-                        if (search_date.empty()) search_date = current_date();
-                        current_family->FindRecord([search_date](const Record& a) {return a.getDate() == search_date; });
+                        if (search_date.empty()) search_date = CurrentDate();
+                        else InputDate(search_date);
+                        CurrentFamily->FindRecord([search_date](const Record& a) {return a.GetDate() == search_date; });
                     }
                     else if (search_choice == 2) {
                         std::string search_category = ReadLine("Введите категорию: ");
-                        current_family->FindRecord([search_category](const Record& a) {return a.getCategory() == search_category; });
+                        CurrentFamily->FindRecord([search_category](const Record& a) {return a.GetCategory() == search_category; });
                     }
                     else {
                         std::cout << "Неверный выбор.\n";
@@ -308,20 +310,22 @@ namespace FamilyBudget {
                     case 1: {
                         int min_amount = ReadInt("Минимальная сумма: ");
                         int max_amount = ReadInt("Максимальная сумма: ");
-                        current_family->FilterByAmountRange(min_amount, max_amount);
+                        CurrentFamily->FilterByAmountRange(min_amount, max_amount);
                         break;
                     }
                     case 2: {
                         std::string username = ReadLine("Введите имя пользователя: ");
-                        current_family->FilterByUserName(username);
+                        CurrentFamily->FilterByUserName(username);
                         break;
                     }
                     case 3: {
-                        std::string start_date = ReadLine("Введите начальную дату (YYYY-MM-DD, Enter — текущая): ");
-                        if (start_date.empty()) start_date = current_date();
-                        std::string end_date = ReadLine("Введите конечную дату (YYYY-MM-DD, Enter — текущая): ");
-                        if (end_date.empty()) end_date = current_date();
-                        current_family->FilterByDateRange(start_date, end_date);
+                        std::string start_date = ReadLine("Введите дату (YYYY-MM-DD, Enter — текущая): ");
+                        if (start_date.empty()) start_date = CurrentDate();
+                        else InputDate(start_date);
+                        std::string end_date = ReadLine("Введите дату (YYYY-MM-DD, Enter — текущая): ");
+                        if (end_date.empty()) end_date = CurrentDate();
+                        else InputDate(end_date);
+                        CurrentFamily->FilterByDateRange(start_date, end_date);
                         break;
                     }
                     default:
@@ -331,20 +335,22 @@ namespace FamilyBudget {
                     break;
                 }
                 case 7:
-                    current_family->ShowFamilyExpenses();
+                    CurrentFamily->ShowFamilyExpenses();
                     break;
                 case 8:
-                    current_family->ShowMyExpenses(*current_user);
+                    CurrentFamily->ShowMyExpenses(*CurrentUser);
                     break;
                 case 9:
-                    user_file_handler.PrintInfo(*current_user);
+                    UserFileHandler.PrintInfo(*CurrentUser);
                     break;
                 case 10: {
-                    std::string start_date = ReadLine("Введите начальную дату (YYYY-MM-DD, Enter — текущая): ");
-                    if (start_date.empty()) start_date = current_date();
-                    std::string end_date = ReadLine("Введите конечную дату (YYYY-MM-DD, Enter — текущая): ");
-                    if (end_date.empty()) end_date = current_date();
-                    current_family->generateReport(start_date, end_date);
+                    std::string start_date = ReadLine("Введите дату (YYYY-MM-DD, Enter — текущая): ");
+                    if (start_date.empty()) start_date = CurrentDate();
+                    else InputDate(start_date);
+                    std::string end_date = ReadLine("Введите дату (YYYY-MM-DD, Enter — текущая): ");
+                    if (end_date.empty()) end_date = CurrentDate();
+                    else InputDate(end_date);
+                    CurrentFamily->GenerateReport(start_date, end_date);
                     break;
                 }
                 }
@@ -360,11 +366,11 @@ namespace FamilyBudget {
                     std::cout << "1) Файл семей\n2) Файл пользователей\n3) Файл трат семьи\n";
                     int clear_choice = ReadInt("Выберите вариант: ");
                     switch (clear_choice) {
-                    case 1: family_file_handler.ClearFile(); break;
-                    case 2: user_file_handler.ClearFile(); break;
+                    case 1: FamilyFileHandler.ClearFile(); break;
+                    case 2: UserFileHandler.ClearFile(); break;
                     case 3: {
                         std::string familyName = ReadLine("Введите имя семьи файл трат которой хотите удалить: ");
-                        family_file_handler.ClearFamilyFile(familyName);
+                        FamilyFileHandler.ClearFamilyFile(familyName);
                         break;
                     }
                     default: std::cout << "Неверный выбор.\n"; break;
@@ -376,11 +382,11 @@ namespace FamilyBudget {
                     std::cout << "1) Файл семей\n2) Файл пользователей\n3) Файл трат семьи\n";
                     int view_choice = ReadInt("Выберите вариант: ");
                     switch (view_choice) {
-                    case 1: family_file_handler.PrintFile(); break;
-                    case 2: user_file_handler.PrintFile(); break;
+                    case 1: FamilyFileHandler.PrintFile(); break;
+                    case 2: UserFileHandler.PrintFile(); break;
                     case 3: {
                         std::string familyName = ReadLine("Введите имя семьи файл трат которой хотите просмотреть: ");
-                        family_file_handler.PrintFamilyFile(familyName);
+                        FamilyFileHandler.PrintFamilyFile(familyName);
                         break;
                     }
                     default: std::cout << "Неверный выбор.\n"; break;
@@ -394,12 +400,22 @@ namespace FamilyBudget {
                     switch (delete_choice) {
                     case 1: {
                         std::string familyName = ReadLine("Введите имя семьи которую хотите удалить: ");
-                        family_file_handler.DeleteFamily(familyName);
+
+                        Family targetFamily(familyName, "");
+                        if (BinaryStorage<Family>::RemoveRecord(FamilyFileHandler.GetFilename(), targetFamily))
+                            std::cout << "Семья успешно удалена.\n";
+                        else
+                            std::cout << "Семья не найдена.\n";
                         break;
                     }
                     case 2: {
                         std::string userName = ReadLine("Введите имя пользователя которого хотите удалить: ");
-                        user_file_handler.DeleteUser(userName);
+
+                        User targetUser(userName, "", "");
+                        if (BinaryStorage<User>::RemoveRecord(UserFileHandler.GetFilename(), targetUser))
+                            std::cout << "Пользователь успешно удален.\n";
+                        else
+                            std::cout << "Пользователь не найден.\n";
                         break;
                     }
                     default: std::cout << "Неверный выбор.\n"; break;
@@ -416,6 +432,8 @@ namespace FamilyBudget {
             system("cls");
         }
     }
+
+
 
     void Menu::RunUserEntry() {
         if (UserAuthFlow(false)) {

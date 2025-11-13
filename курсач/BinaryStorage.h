@@ -42,7 +42,7 @@ namespace FamilyBudget {
             return true;
         }
 
-        static bool openDataFileForRead(std::ifstream& inputFile, const std::string& fileName) {
+        static bool OpenDataFileForRead(std::ifstream& inputFile, const std::string& fileName) {
             inputFile.open(fileName, std::ios::binary);
             if (!inputFile.is_open()) {
                 std::ofstream create(fileName, std::ios::binary | std::ios::app);
@@ -56,7 +56,7 @@ namespace FamilyBudget {
             return true;
         }
 
-        static bool openDataFileForWrite(std::ofstream& outputFile, std::ios::openmode mode, const std::string& fileName) {
+        static bool OpenDataFileForWrite(std::ofstream& outputFile, std::ios::openmode mode, const std::string& fileName) {
             outputFile.open(fileName, std::ios::binary | mode);
             if (!outputFile.is_open()) {
                 std::ofstream create(fileName, std::ios::binary | std::ios::app);
@@ -68,6 +68,16 @@ namespace FamilyBudget {
                 }
             }
             return true;
+        }
+
+
+        // херня
+        static bool RemoveRecord(const std::string& filename, const T& targetRecord) {
+            return false;
+        }
+
+        static bool EditRecord(const std::string& filename, const T& oldRecord, const T& newRecord) {
+            return false;
         }
     };
 }

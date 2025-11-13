@@ -6,10 +6,11 @@
 
 namespace FamilyBudget {
 
-	std::string current_date();
-	void clearInputStream();
+	std::string CurrentDate();
+	void ClearInputStream();
 	int ReadInt(const std::string& prompt);
 	std::string ReadLine(const std::string& prompt);
 	std::string HashPassword(const std::string& password);
+	void InputDate(std::string& date);
 
 }

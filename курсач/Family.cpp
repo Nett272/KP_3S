@@ -1,26 +1,22 @@
 #include "Family.h"
-#include <algorithm>
-#include <iostream>
+
 namespace FamilyBudget {
 
-    std::string Family::getDataFilename(const std::string& familyName) {
+    std::string Family::GetDataFilename(const std::string& familyName) {
         return familyName + ".bin";
     }
-
 
     Family::Family(std::string familyName, std::string familyPassword)
         : familyName(familyName), passwordHash(HashPassword(familyPassword)) {
     }
 
-
     bool Family::operator==(const Family& other) const {
         return familyName == other.familyName && passwordHash == other.passwordHash;
     }
 
-
-    bool Family::recordExpense(const Record& expenseRecord) {
+    bool Family::RecordExpense(const Record& expenseRecord) {
         std::ofstream outputFile;
-        if (!BinaryStorage<Record>::openDataFileForWrite(outputFile, std::ios::app, getDataFilename(familyName))) {
+        if (!BinaryStorage<Record>::OpenDataFileForWrite(outputFile, std::ios::app, GetDataFilename(familyName))) {
             return false;
         }
         outputFile << expenseRecord;
@@ -28,39 +24,36 @@ namespace FamilyBudget {
         return true;
     }
 
-
     void Family::ShowFamilyExpenses() {
         std::ifstream inputFile;
-        if (!BinaryStorage<Record>::openDataFileForRead(inputFile, getDataFilename(familyName))) return;
+        if (!BinaryStorage<Record>::OpenDataFileForRead(inputFile, GetDataFilename(familyName))) return;
 
-        bool found = false;
         Record record;
-        int total = 0;
-
         while (inputFile >> record) {
             std::cout << record << "\n";
-            found = true;
         }
-
-        std::cout << "Общая сумма расходов семьи: " << total << "\n";
 
         inputFile.close();
     }
 
+    void Family::ShowMyExpenses(const User& currentUser) {
+        std::ifstream inputFile;
+        if (!BinaryStorage<Record>::OpenDataFileForRead(inputFile, GetDataFilename(familyName))) return;
 
-    bool Family::deleteRecord(const Record& targetRecord) {
-        return false;
+        Record record;
+        while (inputFile >> record) {
+            if (record.GetUser() && record.GetUser()->GetUsername() == currentUser.GetUsername()) {
+                std::cout << record << "\n";
+            }
+        }
+
+        inputFile.close();
     }
 
-    bool Family::editRecord(const Record& targetRecord, const Record& updatedRecord) {
-        return false;
-    }
-
-
-    bool Family::sortRecords(std::function <bool(const Record&, const Record&)> comp) {
+    bool Family::SortRecords(std::function <bool(const Record&, const Record&)> comp) {
         std::vector<Record> records;
         std::ifstream inputFile;
-        if (!BinaryStorage<Record>::openDataFileForRead(inputFile, getDataFilename(familyName))) return false;
+        if (!BinaryStorage<Record>::OpenDataFileForRead(inputFile, GetDataFilename(familyName))) return false;
         if (!BinaryStorage<Record>::ReadAllFromStream(inputFile, records)) return false;
         inputFile.close();
 
@@ -69,13 +62,13 @@ namespace FamilyBudget {
         std::sort(records.begin(), records.end(), comp);
 
         std::ofstream outputFile;
-        if (!BinaryStorage<Record>::openDataFileForWrite(outputFile, std::ios::trunc, getDataFilename(familyName))) return false;
+        if (!BinaryStorage<Record>::OpenDataFileForWrite(outputFile, std::ios::trunc, GetDataFilename(familyName))) return false;
         return BinaryStorage<Record>::OverwriteAllToFile(outputFile, records);
     }
 
     void Family::FindRecord(std::function <bool(const Record&)> comp) const {
         std::ifstream inputFile;
-        if (!BinaryStorage<Record>::openDataFileForRead(inputFile, getDataFilename(familyName))) return;
+        if (!BinaryStorage<Record>::OpenDataFileForRead(inputFile, GetDataFilename(familyName))) return;
 
         bool found = false;
         Record record;
@@ -90,14 +83,19 @@ namespace FamilyBudget {
     }
 
 
+
+
+
+
+    // херня
     void Family::FilterByAmountRange(int minAmount, int maxAmount) const {
         std::ifstream inputFile;
-        if (!BinaryStorage<Record>::openDataFileForRead(inputFile, getDataFilename(familyName))) return;
+        if (!BinaryStorage<Record>::OpenDataFileForRead(inputFile, GetDataFilename(familyName))) return;
 
         bool found = false;
         Record record;
         while (inputFile >> record) {
-            int amount = record.getAmount();
+            int amount = record.GetAmount();
             if (amount >= minAmount && amount <= maxAmount) {
                 std::cout << record << '\n';
                 found = true;
@@ -109,13 +107,13 @@ namespace FamilyBudget {
 
     void Family::FilterByUserName(const std::string& username) const {
         std::ifstream inputFile;
-        if (!BinaryStorage<Record>::openDataFileForRead(inputFile, getDataFilename(familyName))) return;
+        if (!BinaryStorage<Record>::OpenDataFileForRead(inputFile, GetDataFilename(familyName))) return;
 
         bool found = false;
         Record record;
         while (inputFile >> record) {
-            auto userPtr = record.getUser();
-            if (userPtr && userPtr->getUsername() == username) {
+            auto userPtr = record.GetUser();
+            if (userPtr && userPtr->GetUsername() == username) {
                 std::cout << record << '\n';
                 found = true;
             }
@@ -126,12 +124,12 @@ namespace FamilyBudget {
 
     void Family::FilterByDateRange(const std::string& startDate, const std::string& endDate) const {
         std::ifstream inputFile;
-        if (!BinaryStorage<Record>::openDataFileForRead(inputFile, getDataFilename(familyName))) return;
+        if (!BinaryStorage<Record>::OpenDataFileForRead(inputFile, GetDataFilename(familyName))) return;
 
         bool found = false;
         Record record;
         while (inputFile >> record) {
-            const std::string& recordDate = record.getDate();
+            const std::string& recordDate = record.GetDate();
             if (recordDate >= startDate && recordDate <= endDate) {
                 std::cout << record << '\n';
                 found = true;
@@ -141,10 +139,9 @@ namespace FamilyBudget {
         inputFile.close();
     }
 
-    // херня
-    void Family::generateReport(const std::string& startDate, const std::string& endDate) const {
+    void Family::GenerateReport(const std::string& startDate, const std::string& endDate) const {
         std::ifstream inputFile;
-        if (!BinaryStorage<Record>::openDataFileForRead(inputFile, getDataFilename(familyName))) return;
+        if (!BinaryStorage<Record>::OpenDataFileForRead(inputFile, GetDataFilename(familyName))) return;
 
         std::map<std::string, std::map<std::string, int>> userCategorySums;
         std::map<std::string, int> familyCategorySums;
@@ -152,13 +149,13 @@ namespace FamilyBudget {
 
         Record record;
         while (inputFile >> record) {
-            const std::string& date = record.getDate();
+            const std::string& date = record.GetDate();
             if (date < startDate || date > endDate) continue;
 
-            std::shared_ptr<User> userPtr = record.getUser();
-            std::string username = userPtr ? userPtr->getUsername() : "Неизвестный";
-            int amount = record.getAmount();
-            std::string category = record.getCategory();
+            std::shared_ptr<User> userPtr = record.GetUser();
+            std::string username = userPtr ? userPtr->GetUsername() : "Неизвестный";
+            int amount = record.GetAmount();
+            std::string category = record.GetCategory();
 
             userCategorySums[username][category] += amount;
             familyCategorySums[category] += amount;
@@ -193,27 +190,6 @@ namespace FamilyBudget {
         std::cout << "Итого: " << totalFamilySum << "\n\n";
     }
 
-
-    void Family::ShowMyExpenses(const User& currentUser) {
-        std::ifstream inputFile;
-        if (!BinaryStorage<Record>::openDataFileForRead(inputFile, getDataFilename(familyName))) return;
-
-        bool found = false;
-        Record record;
-        int total = 0;
-
-        while (inputFile >> record) {
-            if (record.getUser() && record.getUser()->getUsername() == currentUser.getUsername()) {
-                std::cout << record << "\n";
-                total += record.getAmount();
-                found = true;
-            }
-        }
-
-        std::cout << "Общая сумма ваших расходов: " << total << "\n";
-
-        inputFile.close();
-    }
 
     std::ofstream& operator<<(std::ofstream& out, const Family& family) {
         size_t nameSize = family.familyName.size();

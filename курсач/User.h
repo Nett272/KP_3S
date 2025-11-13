@@ -22,14 +22,14 @@ namespace FamilyBudget {
 
         bool operator==(const User& other) const;
 
-        const std::string& getUsername() const { return username; }
-        const std::string& getPasswordHash() const { return passwordHash; }
-        const std::string& getFamilyName() const { return familyName; }
-        bool isAdmin() const { return isAdminFlag; }
+        const std::string& GetUsername() const { return username; }
+        const std::string& GetPasswordHash() const { return passwordHash; }
+        const std::string& GetFamilyName() const { return familyName; }
+        bool IsAdmin() const { return isAdminFlag; }
 
-        void setUsername(const std::string& u) { username = u; }
-        void setFamilyName(const std::string& f) { familyName = f; }
-        void setPasswordHash(const std::string& hash) { passwordHash = hash; }
+        void SetUsername(const std::string& username) { this->username = username; }
+        void SetFamilyName(const std::string& familyName) { this->familyName = familyName; }
+        void SetPasswordHash(const std::string& passwordHash) { this->passwordHash = passwordHash; }
 
         friend std::ofstream& operator<<(std::ofstream& out, const User& user);
         friend std::ifstream& operator>>(std::ifstream& in, User& user);

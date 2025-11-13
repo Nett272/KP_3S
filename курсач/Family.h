@@ -6,6 +6,8 @@
 #include "Record.h"
 #include "BinaryStorage.h"
 #include <functional>
+#include <algorithm>
+#include <iostream>
 
 namespace FamilyBudget {
 
@@ -15,27 +17,24 @@ namespace FamilyBudget {
         std::string passwordHash;
 
     public:
-        static std::string getDataFilename(const std::string& familyName);
-
         Family(std::string familyName = "", std::string familyPassword = "");
         Family(const Family& other) = default;
-        Family& operator=(const Family& other) = default;
 
-        bool operator==(const Family& other) const;
+        std::string GetFamilyName() const { return familyName; }
+        std::string GetPasswordHash() const { return passwordHash; }
+        static std::string GetDataFilename(const std::string& familyName);
 
-        std::string getFamilyName() const { return familyName; }
-        std::string getPasswordHash() const { return passwordHash; }
+        void SetFamilyName(const std::string& name) { familyName = name; }
+        void SetFamilyPassword(const std::string& plainPassword) { passwordHash = HashPassword(plainPassword); }
+        void SetFamilyPasswordHash(const std::string& hash) { passwordHash = hash; }
 
-        void setFamilyName(const std::string& name) { familyName = name; }
-        void setFamilyPassword(const std::string& plainPassword) { passwordHash = HashPassword(plainPassword); }
-        void setFamilyPasswordHash(const std::string& hash) { passwordHash = hash; }
+
 
         // Основные операции
-        bool recordExpense(const Record& expenseRecord);
+        bool RecordExpense(const Record& expenseRecord);
         void ShowFamilyExpenses();
-        bool deleteRecord(const Record& targetRecord);
-        bool editRecord(const Record& targetRecord, const Record& updatedRecord);
-        bool sortRecords(std::function <bool(const Record&, const Record&)> comp);
+        void ShowMyExpenses(const User& currentUser);
+        bool SortRecords(std::function <bool(const Record&, const Record&)> comp);
 
         // Фильтры
         void FindRecord(std::function <bool(const Record&)> comp) const;
@@ -44,13 +43,13 @@ namespace FamilyBudget {
         void FilterByDateRange(const std::string& startDate, const std::string& endDate) const;
 
         // Отчёт
-        void generateReport(const std::string& startDate, const std::string& endDate) const;
-        void ShowMyExpenses(const User& currentUser);
+        void GenerateReport(const std::string& startDate, const std::string& endDate) const;
 
         // Сериализация
         friend std::ofstream& operator<<(std::ofstream& out, const Family& family);
         friend std::ifstream& operator>>(std::ifstream& in, Family& family);
         friend std::ostream& operator<<(std::ostream& out, const Family& family);
+        bool operator==(const Family& other) const;
     };
 
 }

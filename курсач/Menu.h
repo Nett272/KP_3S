@@ -9,10 +9,10 @@ namespace FamilyBudget {
 
     class Menu {
     private:
-        UserFileHandler user_file_handler;
-        FamilyFileHandler family_file_handler;
-        std::shared_ptr<Family> current_family;
-        std::shared_ptr<User> current_user;
+        UserFileHandler UserFileHandler;
+        FamilyFileHandler FamilyFileHandler;
+        std::shared_ptr<Family> CurrentFamily;
+        std::shared_ptr<User> CurrentUser;
 
         bool UserAuthFlow(bool asAdmin);
         bool RegistrationFlow(bool asAdmin);

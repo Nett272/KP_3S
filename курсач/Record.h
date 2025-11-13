@@ -17,21 +17,21 @@ namespace FamilyBudget {
         Record(std::shared_ptr<User> ownerPtr, int amount, const std::string& category, const std::string& date);
         Record();
 
-        std::shared_ptr<User> getUser() const { return owner; }
-        int getAmount() const { return amount; }
-        const std::string& getDate() const { return recordDate; }
-        const std::string& getCategory() const { return recordCategory; }
+        std::shared_ptr<User> GetUser() const { return owner; }
+        int GetAmount() const { return amount; }
+        const std::string& GetDate() const { return recordDate; }
+        const std::string& GetCategory() const { return recordCategory; }
 
-        void setUser(std::shared_ptr<User> newUser) { owner = std::move(newUser); }
-        void setAmount(int newAmount) { amount = newAmount; }
-        void setDate(const std::string& newDate) { recordDate = newDate; }
-        void setCategory(const std::string& newCategory) { recordCategory = newCategory; }
+        void SetUser(std::shared_ptr<User> newUser) { owner = std::move(newUser); }
+        void SetAmount(int newAmount) { amount = newAmount; }
+        void SetDate(const std::string& newDate) { recordDate = newDate; }
+        void SetCategory(const std::string& newCategory) { recordCategory = newCategory; }
 
-        bool operator==(const Record& other) const;
 
         friend std::ofstream& operator<<(std::ofstream& out, const Record& record);
         friend std::ifstream& operator>>(std::ifstream& in, Record& record);
         friend std::ostream& operator<<(std::ostream& out, const Record& record);
+        bool operator==(const Record& other) const;
     };
 
 }
